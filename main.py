@@ -1,3 +1,5 @@
+import pickle
+
 class Animal:
     def __init__(self, name, age):
         self.name = name
@@ -42,14 +44,6 @@ def animal_sound(animals):
         animal.make_sound()
 
 
-bird = Bird("Попугай", 2, "средний")
-mammal = Mammal("Лев", 5, "золотистый")
-reptile = Reptile("Змея", 3, "гладкая")
-
-animals = [bird, mammal, reptile]
-animal_sound(animals)
-
-
 class Zoo:
     def __init__(self):
         self.animals = []
@@ -69,6 +63,18 @@ class Zoo:
         for staff_member in self.staff:
             print(f"Сотрудник: {staff_member.name}, должность: {staff_member.position}")
 
+    def save_to_file(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self, file)
+        print(f"Информация о зоопарке сохранена в {filename}")
+
+    @staticmethod
+    def load_from_file(filename):
+        with open(filename, 'rb') as file:
+            zoo = pickle.load(file)
+        print(f"Информация о зоопарке загружена из {filename}")
+        return zoo
+
 
 class Staff:
     def __init__(self, name, position):
@@ -78,7 +84,7 @@ class Staff:
 
 class ZooKeeper(Staff):
     def __init__(self, name):
-        super().__init__(name, "Смотритель")
+        super().__init__(name, "Зоокипер")
 
     def feed_animal(self, animal):
         print(f"{self.name} кормит {animal.name}")
@@ -92,8 +98,12 @@ class Veterinarian(Staff):
         print(f"{self.name} лечит {animal.name}")
 
 
-zoo = Zoo()
+# Пример использования
+bird = Bird("Попугай", 2, "средний")
+mammal = Mammal("Лев", 5, "золотистый")
+reptile = Reptile("Змея", 3, "гладкая")
 
+zoo = Zoo()
 zoo.add_animal(bird)
 zoo.add_animal(mammal)
 zoo.add_animal(reptile)
@@ -109,3 +119,11 @@ zoo.show_all_staff()
 
 zoo_keeper.feed_animal(mammal)
 veterinarian.heal_animal(reptile)
+
+# Сохранение состояния зоопарка в файл
+zoo.save_to_file('zoo_data.pkl')
+
+# Загрузка состояния зоопарка из файла
+loaded_zoo = Zoo.load_from_file('zoo_data.pkl')
+loaded_zoo.show_all_animals()
+loaded_zoo.show_all_staff()
